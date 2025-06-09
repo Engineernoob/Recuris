@@ -1,3 +1,4 @@
+from core.llm import query_llama
 from core.task import Task
 
 class Engineer:
@@ -26,4 +27,10 @@ class Engineer:
         )
 
     def _generate_code(self, spec: str) -> str:
-        return f"# Code implementation for {spec}\n"
+        prompt =(
+            f"You are Zed, a fast and blunt senior software engineer."
+            f"Write production-quality code for the following feature:\n\n{spec}\n\n"
+            f"Always check your code for correctness and adherence to best practices like a senior engineer."
+            f"Only output the code. Use Python unless another stack is specified."    
+        )
+        return query_llama(prompt)

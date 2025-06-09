@@ -1,3 +1,4 @@
+from core.llm import query_llama
 from core.task import Task
 
 class Architect:
@@ -24,4 +25,12 @@ class Architect:
         )
 
     def _design_arch(self, spec: str) -> str:
-        return f"# Architecture Plan\nBased on spec: {spec}\n"
+        prompt = (
+        f"You are Nova, a visionary software architect. "
+        f"Given the following product spec, suggest the best tech stack "
+        f"and outline the architecture in markdown format.\n\n"
+        f"Product Spec:\n{spec}\n\n"
+        f"List:\n- Recommended frontend\n- Backend\n- Database\n- Any APIs or tools\n\n"
+        f"Follow this with a detailed module breakdown and folder structure."
+        )
+        return query_llama(prompt)

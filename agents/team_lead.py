@@ -1,4 +1,7 @@
 # agents/team_lead.py
+import json
+
+from core.llm import query_llama
 from core.task import Task
 
 class TeamLead:
@@ -22,8 +25,23 @@ class TeamLead:
         )
 
     def _break_down_task(self, request: str) -> list:
-        return [
-            f"DEFINE_SPEC: {request}",
-            f"ARCHITECTURE_PLAN: {request}",
-            f"IMPLEMENT_FEATURES: {request}"
+        prompt = (
+        f"You are Ivy, a calm and strategic team lead. "
+        f"Break down the following high-level product request into clear subtasks "
+        f"for the following team members: Max (Product Spec), Nova (Architecture), Zed (Code), Juno (QA).\n\n"
+        f"Request: {request}\n\n"
+        f"Respond with a JSON array of objects like: "
+        f'[{{"target": "max", "description": "..."}}]'
+        )
+
+        breakdown = query_llama(prompt)
+        try:
+            tasks = json.loads(breakdown)
+            return [Task(**t, source="ivy") for t in tasks]
+        except Exception:
+            print("⚠️ Failed to parse LLM response — falling back to defaults.")
+            return [
+            Task(description=f"DEFINE_SPEC: {request}", source="ivy", target="max"),
+            Task(description=f"ARCHITECTURE_PLAN: {request}", source="ivy", target="nova"),
+            Task(description=f"IMPLEMENT_FEATURES: {request}", source="ivy", target="zed")
         ]

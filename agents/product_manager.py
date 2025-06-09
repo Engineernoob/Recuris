@@ -1,3 +1,4 @@
+from core.llm import query_llama
 from core.task import Task
 
 class ProductManager:
@@ -22,5 +23,6 @@ class ProductManager:
             target="nova"
         )
 
-    def _draft_spec(self, request: str) -> str:
-        return f"Specification for DEFINE_SPEC: {request}"
+    def _draft_spec(self, task: str) -> str:
+        prompt = f"You're a product manager. Write a clear spec for: {task}"
+        return query_llama(prompt)

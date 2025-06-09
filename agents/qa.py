@@ -1,3 +1,4 @@
+from core.llm import query_llama
 from core.task import Task
 
 class QA:
@@ -27,7 +28,16 @@ class QA:
         )
 
     def _generate_tests(self, code_file: str) -> list:
-        return [f"Test existence of {code_file}"]
+        code = self.workspace.read_file(code_file)
+        prompt = f"You're a paranoid software QA engineer. Write Python unit tests for the following code:\n\n{code}\n\n. Use the unittest or pytest style."
+        test_code = query_llama(prompt)
+        test_file = f"test_{code_file}"
+        self.workspace.write_file(test_file, test_code)
+        return [f"Generated {test_file}"]
 
     def _execute_tests(self, tests: list) -> dict:
-        return {test: True for test in tests}
+        results = {}
+        for test in tests:
+            result = self.workspace.execute_command(f"python {test}")
+            results[test] = result
+        return results
