@@ -3,6 +3,8 @@ class ProductManager:
         self.task_engine = task_engine
 
     def run(self, task: str):
+        print(f"[🔧 Agent] {self.__class__.__name__} executing...")
+        print(f"[📝] Drafting spec...")
         spec = self._draft_spec(task)
         self.task_engine.assign(f"ARCHITECTURE_PLAN: {spec}")
         return spec

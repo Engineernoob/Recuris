@@ -3,6 +3,8 @@ class QA:
         self.workspace = workspace
 
     def run(self, code_file: str) -> dict:
+        print(f"[🔧 Agent] {self.__class__.__name__} executing...")
+        print(f"[📝] Writing QA results to workspace...")
         tests = self._generate_tests(code_file)
         results = self._execute_tests(tests)
         return results

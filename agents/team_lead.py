@@ -4,6 +4,8 @@ class TeamLead:
         self.task_engine = task_engine
 
     def run(self, user_request: str):
+        print(f"[👨‍💼 Agent] {self.__class__.__name__} executing...")
+        print(f"[📝] Decomposing task...")
         """
         Decompose a high-level request into tasks and assign them.
         """
