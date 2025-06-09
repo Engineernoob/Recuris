@@ -5,7 +5,7 @@ from core.task import Task
 app = typer.Typer()
 
 @app.command()
-def start(request: str):
+def build_project(request: str):
     """Start a fully autonomous AI software build."""
     typer.secho("🧑‍💻 Meet the Recuris Dev Team:", fg=typer.colors.BRIGHT_MAGENTA)
     team = {
