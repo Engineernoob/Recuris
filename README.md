@@ -1,14 +1,14 @@
 # Recuris AI Project
 
 ## 🧠 User Request
-Build a simple blog site with Markdown support
+Build a Next.js Page for a portfolio
 
 ## 📋 Product Spec
-Specification for DEFINE_SPEC: Build a simple blog site with Markdown support
+Specification for DEFINE_SPEC: Build a Next.js Page for a portfolio
 
 ## 🏗️ Architecture Plan
 # Architecture Plan
-Based on spec: Specification for DEFINE_SPEC: Build a simple blog site with Markdown support
+Based on spec: Specification for DEFINE_SPEC: Build a Next.js Page for a portfolio
 
 
 ## 👨‍💻 Output
