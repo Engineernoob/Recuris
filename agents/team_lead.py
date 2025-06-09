@@ -1,9 +1,12 @@
 # agents/team_lead.py
 class TeamLead:
     def __init__(self, task_engine):
+        self.name = "Ivy"
+        self.personality = "Calm, strategic, delegation master"
         self.task_engine = task_engine
 
     def run(self, user_request: str):
+        print(f"[🧠 {self.name}] ({self.personality}) executing...")
         print(f"[👨‍💼 Agent] {self.__class__.__name__} executing...")
         print(f"[📝] Decomposing task...")
         """

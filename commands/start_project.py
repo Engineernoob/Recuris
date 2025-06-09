@@ -11,6 +11,19 @@ from core.workspace import Workspace
 
 app = typer.Typer()
 
+team = {
+    "Ivy": "Calm, strategic, delegation master",
+    "Max": "Analytical, detail-obsessed, UX-focused",
+    "Nova": "Visionary, obsessed with clean architecture",
+    "Zed": "Fast, blunt, cowboy coder with finesse",
+    "Juno": "Paranoid perfectionist, sarcastically sharp",
+    "Echo": "Ghost-like observer, remembers everything"
+}
+
+typer.secho("🧑‍💻 Meet the Recuris Dev Team:", fg=typer.colors.BRIGHT_MAGENTA)
+for name, personality in team.items():
+    typer.echo(f" - {name}: {personality}")
+
 @app.command()
 def start(request: str):
     """Start a new autonomous project build."""

@@ -3,6 +3,8 @@ import json
 
 class MemoryAgent:
     def __init__(self, memory_dir: str = 'data/memory'):
+        self.name = "Echo"
+        self.personality = "Ghost-like observer, remembers everything."
         os.makedirs(memory_dir, exist_ok=True)
         self.memory_dir = memory_dir
 
