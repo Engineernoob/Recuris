@@ -3,6 +3,7 @@ from agents.product_manager import ProductManager
 from agents.architect import Architect
 from agents.engineer import Engineer
 from agents.qa import QA
+from agents.memory_agent import MemoryAgent
 from core.workspace import Workspace
 from core.task import Task
 
@@ -12,6 +13,12 @@ BANTER = {
     ("nova", "zed"): "Zed, try not to hardcode your way into hell again.",
     ("zed", "juno"): "Juno, I'm sending this with love and bugs. Probably.",
     ("juno", "zed"): "Your love has too many runtime errors.",
+    ("zed", "max"): "Max, I'm sending this with love and bugs. Probably.",
+    ("max", "zed"): "Your love has too many runtime errors.",
+    ("max", "nova"): "Let’s see if you can architect without overcomplicating it this time.",
+    ("nova", "zed"): "Zed, try not to hardcode your way into hell again.",
+    ("zed", "juno"): "Juno, I'm sending this with love and bugs. Probably.",
+    ("juno", "zed"): "Your love has too many runtime errors."
 }
 
 class TaskEngine:
@@ -23,7 +30,8 @@ class TaskEngine:
             "max": ProductManager(self),
             "nova": Architect(self.workspace),
             "zed": Engineer(self.workspace),
-            "juno": QA(self.workspace)
+            "juno": QA(self.workspace),
+            "echo": MemoryAgent()
         }
 
     def route_task(self, task: Task):

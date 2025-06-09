@@ -1,9 +1,11 @@
 # recuris.py
 import typer
-from commands.start_project import start
+from commands import start_project
 
-def main():
-    typer.run(start)
+app = typer.Typer(help="🧠 Recuris – Your Autonomous AI Software Team")
+
+# Register the start command
+app.command("start")(start_project.start)
 
 if __name__ == "__main__":
-    main()
+    app()
