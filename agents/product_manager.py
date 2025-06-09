@@ -1,17 +1,26 @@
+from core.task import Task
+
 class ProductManager:
     def __init__(self, task_engine):
         self.name = "Max"
         self.personality = "Analytical, detail-obsessed, UX-focused."
         self.task_engine = task_engine
 
-    def run(self, task: str):
-        print(f"[👨🏻‍💼] {self.name}: {self.personality}")
-        print(f"[🔧 Agent] {self.__class__.__name__} executing...")
-        print(f"[📝] Drafting spec...")
-        spec = self._draft_spec(task)
-        self.task_engine.assign(f"ARCHITECTURE_PLAN: {spec}")
-        return spec
+    def run(self, task: Task) -> Task:
+        print(f"\n[📋 {self.name}] ({self.personality}) received task from {task.source}")
+        print(f"[📝] Drafting spec for: {task.description}")
 
-    def _draft_spec(self, task: str) -> str:
-        # Placeholder: draft simple spec
-        return f"Specification for {task}"
+        spec = self._draft_spec(task.description)
+        print(f"[📋 {self.name}] → Spec ready. Sending to Nova...")
+
+        # Optional friendly jab
+        print(f"[📋 {self.name}] to Nova: 'Let’s see if you can architect this without overcomplicating it again.'")
+
+        return Task(
+            description=spec,
+            source="max",
+            target="nova"
+        )
+
+    def _draft_spec(self, request: str) -> str:
+        return f"Specification for DEFINE_SPEC: {request}"
