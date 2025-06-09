@@ -1,0 +1,9 @@
+{
+  "origin": "juno",
+  "description": "QA complete",
+  "metadata": {
+    "qa_results": {
+      "Test existence of initial_feature_set_based_on_architecture.py": true
+    }
+  }
+}
