@@ -17,6 +17,7 @@ class QA:
         results = self._execute_tests(tests)
 
         self.workspace.write_file("qa_results.json", str(results))
+        task.context.add_qa_result(code_file, results)
 
         print(f"[🧪 {self.name}] to Zed: 'Wow. It actually ran. What did you bribe the compiler with?'")
 

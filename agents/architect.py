@@ -14,6 +14,7 @@ class Architect:
         architecture = self._design_arch(task.description)
         print(f"[📝] Writing architecture to workspace...")
         self.workspace.write_file("architecture.md", architecture)
+        task.context.update_architecture(architecture)
 
         print(f"[👩🏽‍💻 {self.name}] to Zed: 'Don’t mess up my clean architecture this time.'")
 

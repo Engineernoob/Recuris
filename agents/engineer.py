@@ -16,6 +16,7 @@ class Engineer:
 
         filename = f"{task.description.lower().replace(' ', '_')}.py"
         self.workspace.write_file(filename, code)
+        task.context.update_code(code)
 
         print(f"[👨‍💻 {self.name}] to Juno: 'I’m sure you’ll find something to nitpick.'")
 

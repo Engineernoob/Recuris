@@ -13,6 +13,7 @@ class ProductManager:
 
         spec = self._draft_spec(task.description)
         print(f"[📋 {self.name}] → Spec ready. Sending to Nova...")
+        task.context.update_spec(spec)
 
         # Optional friendly jab
         print(f"[📋 {self.name}] to Nova: 'Let’s see if you can architect this without overcomplicating it again.'")

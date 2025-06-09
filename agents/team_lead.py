@@ -1,47 +1,30 @@
 # agents/team_lead.py
-import json
 
-from core.llm import query_llama
-from core.task import Task
+from agents.planner import PlannerAgent
 
 class TeamLead:
     def __init__(self, task_engine):
         self.name = "Ivy"
         self.personality = "Calm, strategic, delegation master"
         self.task_engine = task_engine
+        self.planner = PlannerAgent()
 
-    def run(self, task: Task) -> Task:
-        print(f"\n[🧠 {self.name}] ({self.personality}) received task from {task.source}")
-        print(f"[📝] Analyzing and delegating...")
+    def run(self, user_request: str):
+        print(f"[🧠 {self.name}] ({self.personality}) executing...")
+        print(f"[🧭] Delegating to Orion for strategic breakdown...")
 
-        tasks = self._break_down_task(task.description)
+        # Orion plans everything
+        tasks = self.planner.run(user_request)
 
-        # Only forwarding to Max for now; others will be routed automatically later
-        print(f"[🧠 {self.name}] to Max: 'Set the direction clearly. I trust you.'")
-        return Task(
-            description=tasks[0],
-            source="ivy",
-            target="max"
-        )
+        if not tasks:
+            print(f"[🧠 {self.name}] Hmm. Orion seems stumped.")
+            return []
 
-    def _break_down_task(self, request: str) -> list:
-        prompt = (
-        f"You are Ivy, a calm and strategic team lead. "
-        f"Break down the following high-level product request into clear subtasks "
-        f"for the following team members: Max (Product Spec), Nova (Architecture), Zed (Code), Juno (QA).\n\n"
-        f"Request: {request}\n\n"
-        f"Respond with a JSON array of objects like: "
-        f'[{{"target": "max", "description": "..."}}]'
-        )
+        print(f"[🧠 {self.name}] Orion mapped {len(tasks)} tasks. Delegating to agents...")
 
-        breakdown = query_llama(prompt)
-        try:
-            tasks = json.loads(breakdown)
-            return [Task(**t, source="ivy") for t in tasks]
-        except Exception:
-            print("⚠️ Failed to parse LLM response — falling back to defaults.")
-            return [
-            Task(description=f"DEFINE_SPEC: {request}", source="ivy", target="max"),
-            Task(description=f"ARCHITECTURE_PLAN: {request}", source="ivy", target="nova"),
-            Task(description=f"IMPLEMENT_FEATURES: {request}", source="ivy", target="zed")
-        ]
+        for task in tasks:
+            print(f"[📌 Task] → {task.target}: {task.description}")
+            self.task_engine.add_task(task)
+
+        print(f"[🧠 {self.name}] ‘All agents briefed. Let’s build something brilliant.’")
+        return tasks
