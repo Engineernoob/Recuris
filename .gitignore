@@ -37,6 +37,11 @@ yarn.lock
 # Testing
 coverage/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 # Misc
 *.swp
 *.swo
