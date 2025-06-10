@@ -19,21 +19,43 @@ class Engineer(AgentBase):
                 print(f"[📐] Architectural guidance received. Respecting Nova’s vision.")
 
             prompt = self._build_prompt(task.description, architecture)
-            code = query_llama(prompt)
+            try:
+                code = query_llama(prompt)
+            except Exception as e:
+                print(f"[🔥 Zed] LLM query failed: {e}")
+                return
 
             filename = f"{task.description.lower().replace(' ', '_')}.py"
-            self.workspace.write_file(filename, code)
-            task.context.update_code(code)
+            try:
+                self.workspace.write_file(filename, code)
+                task.context.update_code(code)
+            except Exception as e:
+                print(f"[⚠️ Zed] Failed to write file or update context: {e}")
+                return
 
             juno = task.context.get_agent("juno")
-            self.send_message(juno, f"Here’s the build. Let the nitpicking begin. ({filename})")
+            if juno:
+                self.send_message(juno, f"Here’s the build. Let the nitpicking begin. ({filename})")
 
-            next_task = Task(
-                description=filename,
-                source=self.name,
-                target="juno",
-                metadata={"code": code}
-            )
-            self.task_engine.add_task(next_task)
+                next_task = Task(
+                    description=filename,
+                    source=self.name,
+                    target="juno",
+                    metadata={"code": code}
+                )
+                self.task_engine.add_task(next_task)
+            else:
+                print("[⚠️ Zed] No QA agent (Juno) found in context.")
 
         threading.Thread(target=build_code).start()
+
+    def _build_prompt(self, feature_spec: str, architecture: str) -> str:
+        prompt = (
+            f"You are Zed, a senior software engineer.\n"
+            f"Your task is to build the code for a feature.\n\n"
+            f"Feature: {feature_spec}\n\n"
+        )
+        if architecture:
+            prompt += f"Architectural guidance:\n{architecture}\n\n"
+        prompt += "Write clean, production-ready code. Output only the code."
+        return prompt

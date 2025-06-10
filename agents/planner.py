@@ -1,4 +1,5 @@
 # agents/planner.py
+
 import json
 import threading
 
@@ -32,12 +33,12 @@ class PlannerAgent:
                 f"Break the goal into 4–6 sequential or parallel tasks in JSON format. Each task must use one of the following agents as its 'target':\n"
                 f"- max (Product Manager)\n- nova (Architect)\n- zed (Engineer)\n- juno (QA)\n- echo (Memory)\n\n"
                 f"Use this format:\n"
-                f"[{{\"target\": \"zed\", \"description\": \"...\", \"depends_on\": [\"task_0\"]}}]"
+                f'[{{"target": "zed", "description": "...", "depends_on": ["task_0"]}}]'
             )
 
             response = query_llama(prompt).strip()
             if "```json" in response:
-                response = response.split("```json")[-1].split("```")[-2].strip()
+                response = response.split("```json")[-1].split("```")[0].strip()
             elif "```" in response:
                 response = response.split("```")[-1].strip()
 
@@ -55,25 +56,17 @@ class PlannerAgent:
 
             task_objs = []
             for i, task in enumerate(parsed):
-                task_id = f"task_{i}"
-                raw_deps = task.get("depends_on", [])
-
-                # 🛡️ Ensure dependencies are string IDs
-                depends_on = []
-                for dep in raw_deps:
-                    if isinstance(dep, dict) and "id" in dep:
-                        depends_on.append(dep["id"])
-                    elif isinstance(dep, str):
-                        depends_on.append(dep)
-
                 t = Task(
                     target=task.get("target", "zed"),
                     description=task.get("description", ""),
                     source=self.name,
-                    depends_on=depends_on,
-                    metadata={"goal": goal, "task_id": task_id}
+                    depends_on=task.get("depends_on", []),
+                    metadata={
+                        "goal": goal,
+                        "task_id": f"task_{i}"
+                    }
                 )
-                self.graph.add_task(t, task_id=task_id)
+                self.graph.add_task(t)
                 task_objs.append(t)
 
             if callback:

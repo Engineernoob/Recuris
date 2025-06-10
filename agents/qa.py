@@ -1,7 +1,6 @@
 # agents/qa.py
 
 import threading
-
 from core.agent_base import AgentBase
 from core.llm import query_llama
 from core.task import Task
@@ -12,7 +11,7 @@ class QA(AgentBase):
         self.workspace = workspace
         self.task_engine = task_engine
 
-    def run(self, task: Task):
+    def run(self, task: Task, callback=None):
         def qa_check():
             code_file = task.description or task.metadata.get("code_file", "unknown.py")
             print(f"\n[🧪 {self.name}] received task from {task.source}")
@@ -23,7 +22,6 @@ class QA(AgentBase):
                 results = self._execute_tests(tests)
 
                 if not all("success" in res.lower() or "pass" in res.lower() for res in results.values()):
-                    # 🔁 Ask Zed for fixes
                     zed = task.context.get_agent("zed")
                     self.send_message(zed, "Your code failed QA. Do you test anything before shipping?")
                     retry_task = Task(
@@ -33,6 +31,8 @@ class QA(AgentBase):
                         metadata={"retry": True}
                     )
                     self.task_engine.add_task(retry_task)
+                    if callback:
+                        callback(retry_task)
                     return
 
                 # ✅ Passed QA
@@ -47,6 +47,9 @@ class QA(AgentBase):
                 )
                 self.task_engine.add_task(pass_task)
 
+                if callback:
+                    callback(pass_task)
+
             except Exception as e:
                 ivy = task.context.get_agent("ivy")
                 self.send_message(ivy, f"Something’s deeply broken in QA: {str(e)}")
@@ -57,6 +60,9 @@ class QA(AgentBase):
                     metadata={"error": str(e)}
                 )
                 self.task_engine.add_task(fail_task)
+
+                if callback:
+                    callback(fail_task)
 
         threading.Thread(target=qa_check).start()
 

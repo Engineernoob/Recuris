@@ -12,7 +12,7 @@ class MemoryAgent:
         os.makedirs(memory_dir, exist_ok=True)
         self.memory_dir = memory_dir
 
-    def run(self, task: Task) -> None:
+    def run(self, task: Task, callback=None) -> None:
         def archive():
             print(f"\n[👻 {self.name}] ({self.personality}) received task from {task.source}")
             print(f"[🧠] Archiving project summary...")
@@ -34,7 +34,6 @@ class MemoryAgent:
             except Exception as e:
                 entry["summary"] = f"[ERROR] Summary generation failed: {str(e)}"
 
-            # Save to memory
             key = entry.get('description', f"session_{len(os.listdir(self.memory_dir))}")
             filename = f"{key.replace(' ', '_')}.json"
             path = os.path.join(self.memory_dir, filename)
@@ -43,6 +42,9 @@ class MemoryAgent:
                 json.dump(entry, f, indent=2)
 
             print(f"[👻 {self.name}] Memory stored. This conversation never happened...")
+
+            if callback:
+                callback(task)
 
         threading.Thread(target=archive).start()
 

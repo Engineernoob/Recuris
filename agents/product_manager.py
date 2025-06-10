@@ -13,18 +13,29 @@ class ProductManager(AgentBase):
     def run(self, task: Task):
         thread = threading.Thread(target=self._process_task, args=(task,))
         thread.start()
-        return thread  # Optional: return thread if you want to manage it
+        return thread
 
     def _process_task(self, task: Task):
         print(f"\n[📋 {self.name}] received task from {task.source}")
         print(f"[📝] Drafting product spec for: {task.description}")
 
-        spec = self._draft_spec(task.description)
-        task.context.update_spec(spec)
+        try:
+            spec = self._draft_spec(task.description)
+        except Exception as e:
+            print(f"[⚠️] Failed to draft spec: {e}")
+            return
+
+        try:
+            task.context.update_spec(spec)
+        except Exception as e:
+            print(f"[⚠️] Failed to update context with spec: {e}")
 
         nova = self.task_engine.agents.get("nova")
-        self.send_message(nova, "Let’s see if you can architect this without overcomplicating it again.")
-        self.send_message(nova, f"Here’s the finalized spec: {spec}")
+        if nova:
+            self.send_message(nova, "Let’s see if you can architect this without overcomplicating it again.")
+            self.send_message(nova, f"Here’s the finalized spec: {spec}")
+        else:
+            print("[⚠️] Nova agent not found.")
 
         next_task = Task(
             description=spec,
@@ -34,6 +45,6 @@ class ProductManager(AgentBase):
         )
         self.task_engine.add_task(next_task)
 
-    def _draft_spec(self, task: str) -> str:
-        prompt = f"You're a product manager. Write a clear spec for: {task}"
+    def _draft_spec(self, task_description: str) -> str:
+        prompt = f"You are a product manager. Write a clear, structured spec for this feature:\n\n{task_description}"
         return query_llama(prompt)

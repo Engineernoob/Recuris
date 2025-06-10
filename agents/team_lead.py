@@ -37,8 +37,9 @@ class TeamLead(AgentBase):
         self.planner.run(user_request, context=self.task_engine.context, callback=handle_plan_result)
 
     def _fallback_tasks(self, request: str) -> list:
+        context = self.task_engine.context
         return [
-            Task(description=f"DEFINE_SPEC: {request}", source=self.name, target="max"),
-            Task(description=f"ARCHITECTURE_PLAN: {request}", source=self.name, target="nova"),
-            Task(description=f"IMPLEMENT_FEATURES: {request}", source=self.name, target="zed")
+            Task(description=f"DEFINE_SPEC: {request}", source=self.name, target="max", context=context),
+            Task(description=f"ARCHITECTURE_PLAN: {request}", source=self.name, target="nova", context=context),
+            Task(description=f"IMPLEMENT_FEATURES: {request}", source=self.name, target="zed", context=context)
         ]
