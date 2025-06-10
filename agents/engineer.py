@@ -7,7 +7,7 @@ class Engineer(AgentBase):
     def __init__(self, workspace, task_engine):
         super().__init__("Zed", "Fast, blunt, cowboy coder with finesse.")
         self.workspace = workspace
-        self.task_engine = TaskEngine()
+        self.task_engine = task_engine
 
     def run(self, task: Task):
         def build_code():
