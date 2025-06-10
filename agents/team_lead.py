@@ -1,3 +1,6 @@
+# agents/team_lead.py
+
+import threading
 from core.agent_base import AgentBase
 from agents.planner import PlannerAgent
 from core.task import Task
@@ -7,10 +10,12 @@ class TeamLead(AgentBase):
         super().__init__("Ivy", "Calm, strategic, delegation master")
         self.task_engine = task_engine
         self.planner = PlannerAgent()
+        self._plan_complete_event = threading.Event()
 
     def run(self, user_request: str):
         print(f"\n[🧠 {self.name}] executing request from user...")
         print(f"[🧭] Orion, I need a project plan for: {user_request}")
+        print("[⏳] Planning in progress...")
 
         def handle_plan_result(tasks):
             if not tasks:
@@ -24,9 +29,10 @@ class TeamLead(AgentBase):
                 self.task_engine.add_task(task)
 
             print(f"[🧠 {self.name}] ‘All agents briefed. Let’s build something brilliant.’")
+            self._plan_complete_event.set()  # Optional: can be used to wait in CLI if desired
 
-        # 🧠 Launch Orion's planning thread and let callback handle the rest
-        self.planner.run(user_request, callback=handle_plan_result)
+        # Launch Orion's planning thread; Ivy reacts in callback
+        self.planner.run(user_request, context=self.task_engine.context, callback=handle_plan_result)
 
     def _fallback_tasks(self, request: str) -> list:
         return [

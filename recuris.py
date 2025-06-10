@@ -1,9 +1,7 @@
-# recuris.py
 import typer
 
 from core.project_context import ProjectContext
 from core.task_engine import TaskEngine
-
 
 app = typer.Typer(help="🧠 Recuris – Your Autonomous AI Software Team")
 
@@ -34,15 +32,12 @@ def build():
     engine = TaskEngine()
     engine.context = context
 
+    # 🧠 Start the process with Ivy
     ivy = engine.agents["ivy"]
-    initial_tasks = ivy.run(request)
 
-    for task in initial_tasks:
-        task.context = context
-        engine.add_task(task)
-
-    # 🚀 Let the AI team get to work
-    engine.execute_all()
+    # ⏳ Begin planning + delegation
+    typer.secho("\n🚧 Planning in progress… agents will work in the background.\n", fg=typer.colors.BRIGHT_BLUE)
+    ivy.run(request)
 
 if __name__ == "__main__":
     app()

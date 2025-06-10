@@ -1,3 +1,4 @@
+# agents/planner.py
 import json
 import threading
 
@@ -11,7 +12,6 @@ class PlannerAgent:
         self.personality = "Hyper-logical strategist, sees the whole board."
         self.graph = TaskGraph()
         self.inbox = []
-        self.task_results = []
 
     def visualize(self):
         for tid, deps in self.graph.edges.items():
@@ -34,8 +34,6 @@ class PlannerAgent:
             )
 
             response = query_llama(prompt).strip()
-
-            # ✅ Remove markdown fences and extra explanations
             if "```json" in response:
                 response = response.split("```json")[-1].split("```")[0].strip()
             elif "```" in response:
@@ -44,14 +42,13 @@ class PlannerAgent:
             try:
                 parsed = json.loads(response)
                 if not isinstance(parsed, list):
-                    raise ValueError("Parsed LLM output is not a list of tasks.")
+                    raise ValueError("Parsed response is not a list of tasks.")
             except Exception as e:
                 print(f"⚠️ Planner LLM error: {e}")
                 print(f"📭 Raw response was: {repr(response)}")
                 fallback = [Task(description=f"DEFINE_SPEC: {goal}", source=self.name, target="max")]
                 if callback:
                     callback(fallback)
-                self.task_results = fallback
                 return
 
             task_objs = []
@@ -61,16 +58,14 @@ class PlannerAgent:
                     target=task.get("target", "zed"),
                     description=task.get("description", ""),
                     source=self.name,
-                    depends_on=task.get("depends_on") or [],
+                    depends_on=task.get("depends_on", []),
                     metadata={"goal": goal}
                 )
                 self.graph.add_task(t)
                 task_objs.append(t)
 
-            self.task_results = task_objs
             if callback:
                 callback(task_objs)
 
         thread = threading.Thread(target=plan)
         thread.start()
-        return thread  # Optional: return thread if caller wants to track or join

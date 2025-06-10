@@ -1,8 +1,9 @@
 # agents/qa.py
 
 import threading
+
 from core.agent_base import AgentBase
-from core.llm import query_llama
+from core.ollama import query_ollama
 from core.task import Task
 
 class QA(AgentBase):
@@ -57,3 +58,18 @@ class QA(AgentBase):
                 self.task_engine.add_task(fail_task)
 
         threading.Thread(target=qa_check).start()
+
+    def _generate_tests(self, code_file: str) -> list:
+        code = self.workspace.read_file(code_file)
+        prompt = f"You're a paranoid QA engineer. Write unit tests for this code:\n\n{code}\n\nUse unittest or pytest."
+        test_code = query_ollama(prompt)
+        test_file = f"test_{code_file}"
+        self.workspace.write_file(test_file, test_code)
+        return [test_file]
+
+    def _execute_tests(self, tests: list) -> dict:
+        results = {}
+        for test_file in tests:
+            result = self.workspace.execute_command(f"python {test_file}")
+            results[test_file] = result
+        return results
