@@ -6,9 +6,10 @@ from core.llm import query_llama
 from core.task import Task
 
 class Architect(AgentBase):
-    def __init__(self, workspace):
+    def __init__(self, workspace, task_engine):
         super().__init__("Nova", "Visionary, obsessed with clean architecture.")
         self.workspace = workspace
+        self.task_engine = task_engine
 
     def run(self, task: Task):
         thread = threading.Thread(target=self._process_task, args=(task,))

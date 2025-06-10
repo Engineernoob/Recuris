@@ -7,9 +7,10 @@ from core.llm import query_llama
 from core.task import Task
 
 class QA(AgentBase):
-    def __init__(self, workspace):
+    def __init__(self, workspace, task_engine):
         super().__init__("Juno", "Paranoid perfectionist, sarcastically sharp.")
         self.workspace = workspace
+        self.task_engine = task_engine
 
     def run(self, task: Task):
         def qa_check():

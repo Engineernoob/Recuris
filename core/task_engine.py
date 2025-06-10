@@ -29,9 +29,9 @@ class TaskEngine:
         self.agents = {
             "ivy": TeamLead(self),
             "max": ProductManager(self),
-            "nova": Architect(self.workspace),
-            "zed": Engineer(self.workspace),
-            "juno": QA(self.workspace),
+            "nova": Architect(self.workspace, self),
+            "zed": Engineer(self.workspace, self),
+            "juno": QA(self.workspace, self),
             "echo": MemoryAgent()
         }
 
