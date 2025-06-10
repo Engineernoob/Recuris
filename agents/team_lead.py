@@ -12,7 +12,7 @@ class TeamLead(AgentBase):
         self.planner = PlannerAgent()
         self._plan_complete_event = threading.Event()
 
-    def run(self, user_request: str):
+    def run(self, user_request: str, done_callback=None):
         print(f"\n[🧠 {self.name}] executing request from user...")
         print(f"[🧭] Orion, I need a project plan for: {user_request}")
         print("[⏳] Planning in progress...")
@@ -29,9 +29,11 @@ class TeamLead(AgentBase):
                 self.task_engine.add_task(task)
 
             print(f"[🧠 {self.name}] ‘All agents briefed. Let’s build something brilliant.’")
-            self._plan_complete_event.set()  # Optional: can be used to wait in CLI if desired
+            self._plan_complete_event.set()
 
-        # Launch Orion's planning thread; Ivy reacts in callback
+            if done_callback:
+                done_callback()  # ✅ Trigger the engine once planning is done
+
         self.planner.run(user_request, context=self.task_engine.context, callback=handle_plan_result)
 
     def _fallback_tasks(self, request: str) -> list:

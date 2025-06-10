@@ -1,5 +1,6 @@
-import typer
+# recuris.py
 
+import typer
 from core.project_context import ProjectContext
 from core.task_engine import TaskEngine
 
@@ -32,12 +33,16 @@ def build():
     engine = TaskEngine()
     engine.context = context
 
-    # 🧠 Start the process with Ivy
     ivy = engine.agents["ivy"]
 
-    # ⏳ Begin planning + delegation
+    # ✅ Callback to start execution once Ivy finishes planning
+    def on_plan_finished():
+        typer.secho("\n🚀 Executing planned tasks...\n", fg=typer.colors.BRIGHT_GREEN)
+        engine.execute_all()
+
+    # ⏳ Begin planning + delegation with callback
     typer.secho("\n🚧 Planning in progress… agents will work in the background.\n", fg=typer.colors.BRIGHT_BLUE)
-    ivy.run(request)
+    ivy.run(request, done_callback=on_plan_finished)
 
 if __name__ == "__main__":
     app()
