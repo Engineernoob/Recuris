@@ -2,12 +2,13 @@ import threading
 from core.agent_base import AgentBase
 from core.llm import query_llama
 from core.task import Task
+from core.task_engine import TaskEngine
 
 class Engineer(AgentBase):
     def __init__(self, workspace):
         super().__init__("Zed", "Fast, blunt, cowboy coder with finesse.")
         self.workspace = workspace
-        self.task_engine = task_engine
+        self.task_engine = TaskEngine()
 
     def run(self, task: Task):
         def build_code():
