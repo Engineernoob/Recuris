@@ -24,7 +24,7 @@ class TaskEngine:
         self.workspace = Workspace()
         self.task_queue = []
         self.planner = PlannerAgent()
-        self.context = ProjectContext() # Set up Later
+        self.context = None # Set up Later
 
         self.agents = {
             "ivy": TeamLead(self),
