@@ -20,7 +20,7 @@ class TeamLead(AgentBase):
             print(f"[🧠 {self.name}] Orion seems stumped. Falling back to default structure.")
             tasks = self._fallback_tasks(user_request)
 
-        self.send_message(self.planner.name, f"Got {len(tasks)} tasks. Starting handoff.")
+        self.send_message(self.planner, f"Got {len(tasks)} tasks. Starting handoff.")
 
         for task in tasks:
             print(f"[📌 Task] → {task.target}: {task.description}")
