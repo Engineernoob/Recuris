@@ -29,8 +29,10 @@ class PlannerAgent:
                 f"You are Orion, a brilliant AI project planner coordinating a dev team.\n"
                 f"Goal: {goal}\n"
                 f"Preferred Framework: {framework}\n\n"
-                f"Break it into 4–6 sequential or parallel tasks as a JSON list with this format:\n"
-                f'[{{"target": "zed", "description": "...", "depends_on": ["task_id"]}}]'
+                f"Break the goal into 4–6 sequential or parallel tasks in JSON format. Each task must use one of the following agents as its 'target':\n"
+                f"- max (Product Manager)\n- nova (Architect)\n- zed (Engineer)\n- juno (QA)\n- echo (Memory)\n\n"
+                f"Use this format:\n"
+                f'[{{"target": "zed", "description": "...", "depends_on": ["task_0"]}}]'
             )
 
             response = query_llama(prompt).strip()
