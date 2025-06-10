@@ -21,4 +21,7 @@ class ProjectContext:
         self.qa_results[file] = result
 
     def add_note(self, agent: str, note: str):
-        self.agent_notes[agent] = note
+        self.agent_notes[agent] = note  # 🔧 FIXED: was `no`
+
+    def get_agent(self, name: str):
+        return self.agent_notes.get(name, None)

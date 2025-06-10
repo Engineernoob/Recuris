@@ -1,5 +1,3 @@
-# agents/team_lead.py
-
 from core.agent_base import AgentBase
 from agents.planner import PlannerAgent
 from core.task import Task
@@ -14,20 +12,21 @@ class TeamLead(AgentBase):
         print(f"\n[🧠 {self.name}] executing request from user...")
         print(f"[🧭] Orion, I need a project plan for: {user_request}")
 
-        tasks = self.planner.run(user_request)
+        def handle_plan_result(tasks):
+            if not tasks:
+                print(f"[🧠 {self.name}] Orion seems stumped. Falling back to default structure.")
+                tasks = self._fallback_tasks(user_request)
 
-        if not tasks:
-            print(f"[🧠 {self.name}] Orion seems stumped. Falling back to default structure.")
-            tasks = self._fallback_tasks(user_request)
+            self.send_message(self.planner, f"Got {len(tasks)} tasks. Starting handoff.")
 
-        self.send_message(self.planner, f"Got {len(tasks)} tasks. Starting handoff.")
+            for task in tasks:
+                print(f"[📌 Task] → {task.target}: {task.description}")
+                self.task_engine.add_task(task)
 
-        for task in tasks:
-            print(f"[📌 Task] → {task.target}: {task.description}")
-            self.task_engine.add_task(task)
+            print(f"[🧠 {self.name}] ‘All agents briefed. Let’s build something brilliant.’")
 
-        print(f"[🧠 {self.name}] ‘All agents briefed. Let’s build something brilliant.’")
-        return tasks
+        # 🧠 Launch Orion's planning thread and let callback handle the rest
+        self.planner.run(user_request, callback=handle_plan_result)
 
     def _fallback_tasks(self, request: str) -> list:
         return [

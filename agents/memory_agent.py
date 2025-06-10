@@ -1,5 +1,6 @@
 import json
 import os
+import threading
 
 from core.llm import query_llama
 from core.task import Task
@@ -12,33 +13,38 @@ class MemoryAgent:
         self.memory_dir = memory_dir
 
     def run(self, task: Task) -> None:
-        print(f"\n[👻 {self.name}] ({self.personality}) received task from {task.source}")
-        print(f"[🧠] Archiving project summary...")
+        def archive():
+            print(f"\n[👻 {self.name}] ({self.personality}) received task from {task.source}")
+            print(f"[🧠] Archiving project summary...")
 
-        entry = {
-            "origin": task.source,
-            "description": task.description,
-            "metadata": task.metadata
-        }
+            entry = {
+                "origin": task.source,
+                "description": task.description,
+                "metadata": task.metadata
+            }
 
-        # Generate a summary via LLM
-        prompt = (
-            f"You are Echo, an AI memory archivist.\n"
-            f"Summarize this software project in 3 bullet points:\n\n"
-            f"Task Description:\n{task.description}\n\n"
-            f"Metadata:\n{json.dumps(task.metadata, indent=2)}"
-        )
-        entry["summary"] = query_llama(prompt)
+            try:
+                prompt = (
+                    f"You are Echo, an AI memory archivist.\n"
+                    f"Summarize this software project in 3 bullet points:\n\n"
+                    f"Task Description:\n{task.description}\n\n"
+                    f"Metadata:\n{json.dumps(task.metadata, indent=2)}"
+                )
+                entry["summary"] = query_llama(prompt)
+            except Exception as e:
+                entry["summary"] = f"[ERROR] Summary generation failed: {str(e)}"
 
-        # Save to memory
-        key = entry.get('description', f"session_{len(os.listdir(self.memory_dir))}")
-        filename = f"{key.replace(' ', '_')}.json"
-        path = os.path.join(self.memory_dir, filename)
+            # Save to memory
+            key = entry.get('description', f"session_{len(os.listdir(self.memory_dir))}")
+            filename = f"{key.replace(' ', '_')}.json"
+            path = os.path.join(self.memory_dir, filename)
 
-        with open(path, 'w') as f:
-            json.dump(entry, f, indent=2)
+            with open(path, 'w') as f:
+                json.dump(entry, f, indent=2)
 
-        print(f"[👻 {self.name}] Memory stored. This conversation never happened...")
+            print(f"[👻 {self.name}] Memory stored. This conversation never happened...")
+
+        threading.Thread(target=archive).start()
 
     def retrieve(self, key: str) -> dict:
         path = os.path.join(self.memory_dir, f"{key}.json")

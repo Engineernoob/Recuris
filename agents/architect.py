@@ -1,5 +1,6 @@
 # agents/architect.py
 
+import threading
 from core.agent_base import AgentBase
 from core.llm import query_llama
 from core.task import Task
@@ -9,7 +10,12 @@ class Architect(AgentBase):
         super().__init__("Nova", "Visionary, obsessed with clean architecture.")
         self.workspace = workspace
 
-    def run(self, task: Task) -> Task:
+    def run(self, task: Task):
+        thread = threading.Thread(target=self._process_task, args=(task,))
+        thread.start()
+        return thread  # You may want to store/join this if needed
+
+    def _process_task(self, task: Task):
         print(f"\n[👩🏽‍💻 {self.name}] received task from {task.source}")
         print(f"[🧠] Reviewing product spec...")
 
@@ -22,12 +28,13 @@ class Architect(AgentBase):
         self.send_message(zed, "Don’t mess up my clean architecture this time.")
         self.send_message(zed, f"Architecture doc is done. Check 'architecture.md'.")
 
-        return Task(
+        next_task = Task(
             description="Initial feature set based on architecture",
             source=self.name,
             target="zed",
             metadata={"architecture": architecture}
         )
+        self.task_engine.add_task(next_task)  # if task_engine is available
 
     def _design_arch(self, spec: str) -> str:
         prompt = (
