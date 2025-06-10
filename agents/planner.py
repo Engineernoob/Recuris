@@ -54,13 +54,15 @@ class PlannerAgent:
             task_objs = []
             for i, task in enumerate(parsed):
                 t = Task(
-                    id=f"task_{i}",
-                    target=task.get("target", "zed"),
-                    description=task.get("description", ""),
-                    source=self.name,
-                    depends_on=task.get("depends_on", []),
-                    metadata={"goal": goal}
-                )
+            target=task.get("target", "zed"),
+            description=task.get("description", ""),
+            source=self.name,
+            depends_on=task.get("depends_on", []),
+        metadata={
+            "goal": goal,
+            "task_id": f"task_{i}"  # ✅ Store it in metadata instead
+    }
+)
                 self.graph.add_task(t)
                 task_objs.append(t)
 
