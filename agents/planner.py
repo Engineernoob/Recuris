@@ -11,6 +11,7 @@ class PlannerAgent:
         self.name = "Orion"
         self.personality = "Hyper-logical strategist, sees the whole board."
         self.graph = TaskGraph()
+        self.inbox = []
 
     def visualize(self):
         for tid, deps in self.graph.edges.items():
