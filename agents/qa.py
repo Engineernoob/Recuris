@@ -3,7 +3,7 @@
 import threading
 
 from core.agent_base import AgentBase
-from core.ollama import query_ollama
+from core.llm import query_llama
 from core.task import Task
 
 class QA(AgentBase):
@@ -62,7 +62,7 @@ class QA(AgentBase):
     def _generate_tests(self, code_file: str) -> list:
         code = self.workspace.read_file(code_file)
         prompt = f"You're a paranoid QA engineer. Write unit tests for this code:\n\n{code}\n\nUse unittest or pytest."
-        test_code = query_ollama(prompt)
+        test_code = query_llama(prompt)
         test_file = f"test_{code_file}"
         self.workspace.write_file(test_file, test_code)
         return [test_file]
