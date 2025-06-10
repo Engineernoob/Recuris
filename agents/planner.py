@@ -33,17 +33,25 @@ class PlannerAgent:
                 f'[{{"target": "zed", "description": "...", "depends_on": ["task_id"]}}]'
             )
 
+            response = query_llama(prompt).strip()
+
+            # ✅ Remove markdown fences and extra explanations
+            if "```json" in response:
+                response = response.split("```json")[-1].split("```")[0].strip()
+            elif "```" in response:
+                response = response.split("```")[-1].strip()
+
             try:
-                response = query_llama(prompt).strip()
-                if not response.startswith("["):
-                    raise ValueError("Planner response not in expected format")
                 parsed = json.loads(response)
+                if not isinstance(parsed, list):
+                    raise ValueError("Parsed LLM output is not a list of tasks.")
             except Exception as e:
                 print(f"⚠️ Planner LLM error: {e}")
                 print(f"📭 Raw response was: {repr(response)}")
                 fallback = [Task(description=f"DEFINE_SPEC: {goal}", source=self.name, target="max")]
                 if callback:
                     callback(fallback)
+                self.task_results = fallback
                 return
 
             task_objs = []
@@ -53,7 +61,7 @@ class PlannerAgent:
                     target=task.get("target", "zed"),
                     description=task.get("description", ""),
                     source=self.name,
-                    depends_on=task.get("depends_on", []),
+                    depends_on=task.get("depends_on") or [],
                     metadata={"goal": goal}
                 )
                 self.graph.add_task(t)
@@ -65,4 +73,4 @@ class PlannerAgent:
 
         thread = threading.Thread(target=plan)
         thread.start()
-        return thread  # You can track this if needed
+        return thread  # Optional: return thread if caller wants to track or join
