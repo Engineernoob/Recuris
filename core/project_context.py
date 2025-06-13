@@ -7,9 +7,13 @@ class ProjectContext:
         self.filenames = []
         self.qa_results = {}
         self.agent_notes = {}  # optional: {agent_name: note}
+        self.code_snippets = []
 
     def update_spec(self, spec: str):
         self.spec = spec
+
+    def update_code(self, code: str):
+        self.code_snippets.append(code)
 
     def update_architecture(self, arch: str):
         self.architecture = arch

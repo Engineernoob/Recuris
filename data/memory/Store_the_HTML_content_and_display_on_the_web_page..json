@@ -1,0 +1,9 @@
+{
+  "origin": "Orion",
+  "description": "Store the HTML content and display on the web page.",
+  "metadata": {
+    "goal": " A webpage that displays \u201cHello, world!\u201d",
+    "task_id": "task_3"
+  },
+  "summary": "Here's a 3-bullet point summary of the software project:\n\n* **Objective:** Create a simple web page displaying the text \"Hello, world!\" on display.\n* **Functionality:** The software will store HTML content as its primary data and render it within a web browser. \n* **Metadata:**  A clear description (goal and task ID) of what needs to be accomplished for this project. \n\nLet me know if you'd like more details! \n"
+}
