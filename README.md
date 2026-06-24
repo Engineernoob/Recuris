@@ -41,14 +41,19 @@ Recuris/
 
 ## How It Works
 
-    1.Define agents in crew.yaml
-    2.Configure models in llm_config.yaml
-    3.Start Recuris with the main entry point
-    4.Agents collaborate to:
-    - interpret the task
-    - plan the work
-    - execute implementation steps
-    - review results for quality
+```
+User Task
+↓
+Command / Task Routing
+↓
+Architect Agent
+↓
+Engineer Agent
+↓
+QA Agent
+↓
+Saved Artifacts + Memory
+```
 
 ## Getting Started
 
